@@ -29,7 +29,7 @@ export default function Home() {
     setError('');
 
     try {
-      const response = await fetch(`http://${process.env.NEXT_PUBLIC_API_HOST}/api/check-plagiarism`, {
+      const response = await fetch(`https://${process.env.NEXT_PUBLIC_API_HOST}/api/check-plagiarism`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
