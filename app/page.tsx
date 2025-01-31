@@ -52,14 +52,14 @@ export default function Home() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen pb-20 bg-gray-50">
       <Head>
         <title>Veracity Checker - AI-Powered Plagiarism Detection</title>
         <meta name="description" content="AI-powered plagiarism detection tool" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
 
-      <main className="container mx-auto px-4 py-8">
+      <main className="container">
         <VeracityChecker />
 
         <div className="mx-4 text-black sm:mx-20">
@@ -96,67 +96,133 @@ export default function Home() {
             )}
 
             {result && (
-              <div
-                className={`mt-6 p-6 rounded-lg transition-all hover:shadow-lg ${
-                  result.isPlagiarized
-                    ? 'bg-orange-50 text-yellow-500'
-                    : 'bg-green-50 text-green-700'
-                }`}
-              >
-                <div className="flex flex-col sm:flex-row items-center justify-center">
-                  <Image
-                    src={result.isPlagiarized ? aiIcon : tick}
-                    alt=""
-                    className="w-16 h-16 sm:w-24 sm:h-24"
-                  />
-                  <div className="sm:mx-5 mt-4 sm:mt-0">
-                    <h3 className="text-2xl sm:text-3xl text-center font-extralight mb-2">
-                      {result.isPlagiarized
-                        ? 'AI-Generated Content Detected'
-                        : 'Human-Written Content Detected'}
-                    </h3>
-                    <p className="text-xl sm:text-2xl text-center font-bold">
-                      {(result.confidence * 100).toFixed(2)}% Confidence
-                    </p>
-                  </div>
-                </div>
-
-                <div>
-                  {result.isPlagiarized ? (
-                    <div className="space-y-2 bg-red-100 rounded-md pt-7 mt-10 text-center">
-                      <p className="text-yellow-500 text-xl sm:text-2xl font-extralight">
-                        Detection Indicators:
-                      </p>
-                      {[
-                        'Highly structured and formal language patterns',
-                        'Consistent technical accuracy throughout',
-                        'Uniform sentence complexity',
-                        'Characteristic AI language model patterns detected',
-                      ].map((indicator, index) => (
-                        <div key={index} className="flex items-center gap-2 justify-center text-gray-700">
-                          <AlertTriangle className="w-4 h-4 text-yellow-500" />
-                          <span>{indicator}</span>
-                        </div>
-                      ))}
+              <div className={`mt-6 p-6 rounded-lg border ${
+                result.confidence * 100 <= 20 ? 'bg-green-50' :
+                result.confidence * 100 <= 45 ? 'bg-yellow-50' :
+                result.confidence * 100 <= 60 ? 'bg-orange-50' : 'bg-red-50'
+              }`}>
+                <div className="flex items-center justify-center mb-4">
+                  {result.confidence * 100 <= 20 ? (
+                    <div className="flex items-center">
+                      <span className="text-2xl mr-2">🎉</span>
+                      <h2 className="text-2xl font-semibold text-green-600">No Plagiarism Detected</h2>
+                    </div>
+                  ) : result.confidence * 100 <= 45 ? (
+                    <div className="flex items-center">
+                      <span className="text-2xl mr-2">📊</span>
+                      <h2 className="text-2xl font-semibold text-yellow-500">Low Similarities Detected</h2>
+                    </div>
+                  ) : result.confidence * 100 <= 60 ? (
+                    <div className="flex items-center">
+                      <span className="text-2xl mr-2">⚠️</span>
+                      <h2 className="text-2xl font-semibold text-orange-500">High Similarities Detected</h2>
                     </div>
                   ) : (
-                    <div className="space-y-2 bg-green-100 rounded-md pt-7 mt-10 text-center">
-                      <p className="text-green-500 text-xl sm:text-2xl font-extralight">
-                        Analysis Details:
-                      </p>
-                      {[
-                        'Natural language patterns detected',
-                        'Consistent writing style',
-                        'Organic sentence structure variations',
-                        'Authentic thought progression',
-                      ].map((detail, index) => (
-                        <div key={index} className="flex items-center gap-2 justify-center text-gray-700">
-                          <Check className="w-4 h-4 text-green-600" />
-                          <span>{detail}</span>
-                        </div>
-                      ))}
+                    <div className="flex items-center">
+                      <span className="text-2xl mr-2">🚫</span>
+                      <h2 className="text-2xl font-semibold text-red-600">Plagiarism Detected</h2>
                     </div>
                   )}
+                </div>
+
+                <p className="text-center text-gray-700 mb-6">
+                  {result.confidence * 100 <= 20 
+                    ? "No plagiarism detected. Your writing is unique. Ensure citations are formatted correctly where needed."
+                    : result.confidence * 100 <= 45
+                    ? "Your text has minimal detected plagiarism. However, consider the following to maintain high originality and credibility."
+                    : result.confidence * 100 <= 60
+                    ? "Significant similarities have been detected in your text. Please review and revise the content to ensure academic integrity."
+                    : "Critical level of matching content detected. Immediate revision is required to meet academic integrity standards."}
+                </p>
+
+                <div className="bg-opacity-20 py-3 px-6 rounded-lg mb-6 text-center" 
+                  style={{ 
+                    backgroundColor: result.confidence * 100 <= 20 ? 'rgba(220, 252, 231, 0.4)' :
+                      result.confidence * 100 <= 45 ? 'rgba(255, 237, 213, 0.4)' :
+                      result.confidence * 100 <= 60 ? 'rgba(255, 237, 213, 0.6)' :
+                      'rgba(254, 226, 226, 0.6)'
+                  }}>
+                  <h3 className="text-xl font-semibold mb-2" style={{
+                    color: result.confidence * 100 <= 20 ? '#16a34a' :
+                      result.confidence * 100 <= 45 ? '#f97316' :
+                      result.confidence * 100 <= 60 ? '#ea580c' : '#dc2626'
+                  }}>
+                    Overall Plagiarism Score: {(result.confidence * 100).toFixed(2)}%
+                  </h3>
+                  {result.confidence * 100 > 20 && (
+                    <p className="text-gray-600">
+                      {result.confidence * 100 <= 45
+                        ? "Some common phrases and citations detected."
+                        : result.confidence * 100 <= 60
+                        ? "Multiple matching passages identified."
+                        : "Substantial matching content found across sources."}
+                    </p>
+                  )}
+                </div>
+
+                <div className="bg-gray-50 p-6 text-center rounded-lg">
+                  <h3 className="text-xl font-semibold text-gray-800 mb-4">
+                    Improvement Suggestions:
+                  </h3>
+                  <div className="space-y-3">
+                    {result.confidence * 100 <= 20 ? (
+                      <>
+                        <div className="flex items-start justify-center gap-2">
+                          <Check className="w-5 h-5 text-green-600 mt-1" />
+                          <span className="text-gray-600">Maintain your current level of originality in future work.</span>
+                        </div>
+                        <div className="flex items-start justify-center gap-2">
+                          <Check className="w-5 h-5 text-green-600 mt-1" />
+                          <span className="text-gray-600">Continue using proper citation practices for referenced materials.</span>
+                        </div>
+                      </>
+                    ) : result.confidence * 100 <= 45 ? (
+                      <>
+                        <div className="flex items-start justify-center gap-2">
+                          <Check className="w-5 h-5 text-yellow-600 mt-1" />
+                          <span className="text-gray-600">Review common phrases and consider rephrasing for uniqueness.</span>
+                        </div>
+                        <div className="flex items-start justify-center gap-2">
+                          <Check className="w-5 h-5 text-yellow-600 mt-1" />
+                          <span className="text-gray-600">Ensure all sources are properly cited and referenced.</span>
+                        </div>
+                        <div className="flex items-start justify-center gap-2">
+                          <Check className="w-5 h-5 text-yellow-600 mt-1" />
+                          <span className="text-gray-600">Consider incorporating more original analysis and insights.</span>
+                        </div>
+                      </>
+                    ) : result.confidence * 100 <= 60 ? (
+                      <>
+                        <div className="flex items-start justify-center gap-2">
+                          <Check className="w-5 h-5 text-orange-600 mt-1" />
+                          <span className="text-gray-600">Thoroughly revise matching passages with original writing.</span>
+                        </div>
+                        <div className="flex items-start justify-center gap-2">
+                          <Check className="w-5 h-5 text-orange-600 mt-1" />
+                          <span className="text-gray-600">Use proper quotation marks for direct quotes.</span>
+                        </div>
+                        <div className="flex items-start justify-center gap-2">
+                          <Check className="w-5 h-5 text-orange-600 mt-1" />
+                          <span className="text-gray-600">Implement extensive paraphrasing while maintaining accurate citations.</span>
+                        </div>
+                      </>
+                    ) : (
+                      <>
+                        <div className="flex items-start justify-center gap-2">
+                          <Check className="w-5 h-5 text-red-600 mt-1" />
+                          <span className="text-gray-600">Completely rewrite the content using your own words and ideas.</span>
+                        </div>
+                        <div className="flex items-start justify-center gap-2">
+                          <Check className="w-5 h-5 text-red-600 mt-1" />
+                          <span className="text-gray-600">Add proper citations for all referenced materials.</span>
+                        </div>
+                        <div className="flex items-start justify-center gap-2">
+                          <Check className="w-5 h-5 text-red-600 mt-1" />
+                          <span className="text-gray-600">Consider consulting with academic writing resources for guidance.</span>
+                        </div>
+                      </>
+                    )}
+                  </div>
                 </div>
               </div>
             )}
