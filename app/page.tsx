@@ -62,7 +62,7 @@ export default function Home() {
       <main className="container">
         <VeracityChecker />
 
-        <div className="mx-4 text-black sm:mx-20">
+        <div id="try-it-now" className="mx-4 text-black sm:mx-20">
           <h1 className="text-3xl sm:text-4xl font-bold text-center mb-8">
             Try It Now
           </h1>
